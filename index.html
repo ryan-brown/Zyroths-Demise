@@ -25,15 +25,22 @@
   </style>
 
   <link rel="shortcut icon" href="img/favicon.ico" />
+
 </head>
-<body bgcolor="#EEEEEE">
+<body bgcolor="#EEEEEE" class="unselectable">
 <center>
-  <div class="unselectable"> 
+  <div> 
     <h1>Dragon Defender</h1> 
   </div>
-  <canvas id="canvas" width="800" height="600"></canvas>
-  <div class="unselectable">
-    <h1>Rules</h1>
+  <div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+  </div>
+  <div>
+    <button id="muteMusicButton" type="button">Mute Music</button>
+    <button id="muteSoundButton" type="button">Mute Sound</button>
+  </div>
+  <div>
+    <h1>How To Play</h1>
     <p>You're a dragon. Kill peasants, get $$$.</p>
     <p>WASD to move</p>
     <p>Click to shoot a beautiful fireball</p>
@@ -41,6 +48,13 @@
   </div>
 </center>
 
+<script type="text/javascript" src="js/entity.js"></script>
+<script type="text/javascript" src="js/animator.js"></script>
+<script type="text/javascript" src="js/peasant.js"></script>
+<script type="text/javascript" src="js/knight.js"></script>
+<script type="text/javascript" src="js/fireball.js"></script>
+<script type="text/javascript" src="js/coin.js"></script>
+<script type="text/javascript" src="js/dragon.js"></script>
 <script type="text/javascript" src="js/game.js"></script>
 
 </body>

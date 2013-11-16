@@ -1,6 +1,6 @@
 // Game Class
 // This is the heart and soul of Dragon Defender
-var Game = (function () {
+var Game = function (id) {
   // The almighty list of variables. Oh boy.
   var canvas, ctx, 
       dragon, fireballs, peasants, knights, coins,
@@ -16,9 +16,14 @@ var Game = (function () {
       gameOver,
       interval;
 
-  // Constructor
-  // Initialize everything with given canvas ID of html element
-  var self = function (id) {
+  // List of functions
+  var init, reset, loop, 
+      update, updateObjects, handleCollisions, 
+      updateGame, updateSpawnTimes, updateAnimations,
+      draw, drawFancyText, drawSprite, drawSpriteSheet,
+      getMousePos;
+
+  init = function() {
     // Grab the canvas and context (canvas init stuff)
     canvas = document.getElementById(id);
     ctx = canvas.getContext('2d');
@@ -159,101 +164,55 @@ var Game = (function () {
 
     // Set the initial last time to now.
     lastTime = new Date().getTime();
-  };
+  }
+  
 
   // Reset the game
-  function reset() {
-      // Reset all relevant variables
-      if(newHighscore) highscore = dragon.score;
-      dragon = new Dragon();
-      fireballs = [];
-      peasants = [];
-      knights = [];
-      coins = [];
+  reset = function() {
+    // Reset all relevant variables
+    if(newHighscore) highscore = dragon.score;
+    dragon = new Dragon();
+    fireballs = [];
+    peasants = [];
+    knights = [];
+    coins = [];
 
-      peasantSpawnTime = 3;
-      minPeasantSpawnTime = .7;
-      currPeasantSpawnTime = peasantSpawnTime;
+    peasantSpawnTime = 3;
+    minPeasantSpawnTime = .7;
+    currPeasantSpawnTime = peasantSpawnTime;
 
-      knightSpawnTime = 10;
-      minKnightSpawnTime = 1.75;
-      currKnightSpawnTime = knightSpawnTime;
+    knightSpawnTime = 10;
+    minKnightSpawnTime = 1.75;
+    currKnightSpawnTime = knightSpawnTime;
 
-      newHighscore = false;
+    newHighscore = false;
 
-      gameOver = false;
-    }
+    gameOver = false;
+  }
 
   // game loop
-  var loop = function () {
+  loop = function () {
+    // Calculate time since last tick in ms
     var newTime = new Date().getTime();
     var delta = newTime - lastTime;
     lastTime = newTime;
+
+    // if game running, update the game
     if(!gameOver) { update(delta); }
+    
+    // Draw the game to canvas
     draw();  
   }
 
-  // Game update based on given delta (time since last tick in ms)
-  var update = function (delta) {
+  // Update objects positions
+  updateObjects = function(delta) {
     // Update the dragon
     dragon.update(delta);
-
-    // If the dragon is moving, update his animation
-    if(dragon.movingUp   || 
-       dragon.movingDown || 
-       dragon.movingLeft || 
-       dragon.movingRight) {
-      dragon.animator.updateAnimation(delta);
-    }
-
-    // If there is a new highscore and newHighscore isn't set yet
-    // (i.e. dragon JUST got a highscore)
-    // then set newHighscore = true and play newHighscore sound
-    if(dragon.score > highscore && !newHighscore) {
-      newHighscore = true;
-
-      // Make sure sound isn't muted
-      if(!muteSound) {
-        newHighscoreSound.currentTime=0;
-        newHighscoreSound.play();
-      }
-    }
-
-    // If the dragon is firing and is able to, fire!
-    // Also play fireballSound
-    if(dragon.firing && dragon.currFireDelay <= 0) {
-      fireballs.push(dragon.fire()); 
-
-      // Make sure sound isn't muted
-      if(!muteSound) {
-        fireballSound.currentTime=0;
-        fireballSound.play();
-      }
-    }
-
-    // If the dragon is trying to fire magic and isn't currently firing
-    // and has sufficient mana, then fire the magic ability
-    if(dragon.tryToMagicFire && !dragon.magicFiring && dragon.mana >= 50) {
-      dragon.magicFiring = true;
-      fireballs = fireballs.concat(dragon.magic());
-
-      // Make sure sound isn't muted
-      if(!muteSound) {
-        magicSound.currentTime=0;
-        magicSound.play();
-      }
-    }
-
-    // If the dragon is not trying to fire magic, he is not firing
-    if(!dragon.tryToMagicFire) {
-      dragon.magicFiring = false;
-    }
 
     // For every fireball, update its position and animation
     // and if it's off the screen, delete it
     for(var i = 0; i < fireballs.length; i++) {
       fireballs[i].update(delta);
-      fireballs[i].animator.updateAnimation(delta);
       if(fireballs[i].entity.x < 0 || 
         fireballs[i].entity.x > 800 || 
         fireballs[i].entity.y < 0 || 
@@ -263,43 +222,16 @@ var Game = (function () {
     // For every peasant, update its position and animation
     for(var i = 0; i < peasants.length; i++) {
       peasants[i].update(dragon.entity, delta);
-      peasants[i].animator.updateAnimation(delta);
     }
 
     // For every knight, update its position and animation
     for(var i = 0; i < knights.length; i++) {
       knights[i].update(dragon.entity, delta);
-      knights[i].animator.updateAnimation(delta);
     }
+  }
 
-    // If its not yet time to spawn a peasant, decrerase the time left
-    // Otherise spawn a peasant
-    if(currPeasantSpawnTime > 0) currPeasantSpawnTime -= delta/1000;
-    else {
-      // Make sure the game has not reached maximum difficulty
-      if(peasantSpawnTime > minPeasantSpawnTime) {
-        peasantSpawnTime *= 0.995;
-      }
-      peasants.push(new Peasant());
-
-      // The time before next peasant is random
-      currPeasantSpawnTime = Math.random()*peasantSpawnTime+0.2;
-    }
-
-    // If its not yet time to spawn a knight, decrerase the time left
-    // Otherise spawn a knight
-    if(currKnightSpawnTime > 0) currKnightSpawnTime -= delta/1000;
-    else {
-      // Make sure the game has not reached maximum difficulty
-      if(knightSpawnTime > minKnightSpawnTime) {
-        knightSpawnTime *= 0.98;
-      }
-      knights.push(new Knight());
-
-      // The time before next knight is random
-      currKnightSpawnTime = Math.random()*knightSpawnTime+1;
-    }
-
+  // Handle collisions
+  handleCollisions = function() {
     // For every peasant, check collisions with dragon and fireballs
     for(var i = 0; i < peasants.length; i++) {
       // If this peasant is colliding with the dragon, end game
@@ -420,11 +352,8 @@ var Game = (function () {
       }
     }
 
-    // For every coin, update animation and check collision
+    // For every coin check collision
     for(var i = 0; i < coins.length; i++) {
-      // Update coin animation
-      coins[i].animator.updateAnimation(delta);
-
       // If coin colliding with dragon...
       if(coins[i].entity.collide(dragon.entity)) {
         // delete the coin and incease score
@@ -440,8 +369,125 @@ var Game = (function () {
     }
   }
 
+  // Update spawn times of peasants/knights
+  updateSpawnTimes = function(delta) {
+    // If its not yet time to spawn a peasant, decrerase the time left
+    // Otherise spawn a peasant
+    if(currPeasantSpawnTime > 0) currPeasantSpawnTime -= delta/1000;
+    else {
+      // Make sure the game has not reached maximum difficulty
+      if(peasantSpawnTime > minPeasantSpawnTime) {
+        peasantSpawnTime *= 0.995;
+      }
+      peasants.push(new Peasant());
+
+      // The time before next peasant is random
+      currPeasantSpawnTime = Math.random()*peasantSpawnTime+0.2;
+    }
+
+    // If its not yet time to spawn a knight, decrerase the time left
+    // Otherise spawn a knight
+    if(currKnightSpawnTime > 0) currKnightSpawnTime -= delta/1000;
+    else {
+      // Make sure the game has not reached maximum difficulty
+      if(knightSpawnTime > minKnightSpawnTime) {
+        knightSpawnTime *= 0.98;
+      }
+      knights.push(new Knight());
+
+      // The time before next knight is random
+      currKnightSpawnTime = Math.random()*knightSpawnTime+1;
+    }
+  }
+
+  // Update game information
+  updateGame = function() {
+    // If there is a new highscore and newHighscore isn't set yet
+    // (i.e. dragon JUST got a highscore)
+    // then set newHighscore = true and play newHighscore sound
+    if(dragon.score > highscore && !newHighscore) {
+      newHighscore = true;
+
+      // Make sure sound isn't muted
+      if(!muteSound) {
+        newHighscoreSound.currentTime=0;
+        newHighscoreSound.play();
+      }
+    }
+
+    // If the dragon is firing and is able to, fire!
+    // Also play fireballSound
+    if(dragon.firing && dragon.currFireDelay <= 0) {
+      fireballs.push(dragon.fire()); 
+
+      // Make sure sound isn't muted
+      if(!muteSound) {
+        fireballSound.currentTime=0;
+        fireballSound.play();
+      }
+    }
+
+    // If the dragon is trying to fire magic and isn't currently firing
+    // and has sufficient mana, then fire the magic ability
+    if(dragon.tryToMagicFire && !dragon.magicFiring && dragon.mana >= 50) {
+      dragon.magicFiring = true;
+      fireballs = fireballs.concat(dragon.magic());
+
+      // Make sure sound isn't muted
+      if(!muteSound) {
+        magicSound.currentTime=0;
+        magicSound.play();
+      }
+    }
+
+    // If the dragon is not trying to fire magic, he is not firing
+    if(!dragon.tryToMagicFire) {
+      dragon.magicFiring = false;
+    }
+  }
+
+  updateAnimations = function(delta) {
+    // If the dragon is moving, update his animation
+    if(dragon.movingUp   || dragon.movingDown || 
+       dragon.movingLeft || dragon.movingRight) {
+      dragon.animator.updateAnimation(delta);
+    }
+
+    // Update animations of fireballs, peasants, knights, and coins
+    for(var i = 0; i < fireballs.length; i++ ) {
+      fireballs[i].animator.updateAnimation(delta);
+    }
+    for(var i = 0; i < peasants.length; i++ ) {
+      peasants[i].animator.updateAnimation(delta);
+    }
+    for(var i = 0; i < knights.length; i++ ) {
+      knights[i].animator.updateAnimation(delta);
+    }
+    for(var i = 0; i < coins.length; i++ ) {
+      coins[i].animator.updateAnimation(delta);
+    }
+  }
+
+  // Game update based on given delta (time since last tick in ms)
+  update = function (delta) {
+    // Update objects
+    updateObjects(delta);
+
+    // Handle collisions
+    handleCollisions();
+
+    // Update game information (highscore, whether dragon firing)
+    updateGame();
+
+    // Update spawn information for peasants/knigths
+    updateSpawnTimes(delta);
+
+    // Update animations of obejcts
+    updateAnimations(delta);
+  }
+
   // Draw to canvas!
-  var draw = function () {
+  draw = function () {
     // Clear screen and draw background to canvas
     ctx.clearRect(0, 0, 800, 600);
     ctx.drawImage(backgroundImg, 0, 0);
@@ -459,11 +505,6 @@ var Game = (function () {
     // For every coin, draw it
     for(var i = 0; i < coins.length; i++) {
       drawSpriteSheet(coinSprite, coins[i]);
-    }
-
-    // For every fireball, draw it
-    for(var i = 0; i < fireballs.length; i++) {
-      drawSpriteSheet(fireballSprite, fireballs[i]);
     }
 
     // For every peasant draw it in the respectice orientation
@@ -486,7 +527,12 @@ var Game = (function () {
       }
     }
 
-    // Black border around manabar 
+    // For every fireball, draw it
+    for(var i = 0; i < fireballs.length; i++) {
+      drawSpriteSheet(fireballSprite, fireballs[i]);
+    }
+
+    // Black border around mana bar 
     ctx.fillStyle = 'black';
     ctx.fillRect(299, 569, 202, 27);
 
@@ -494,7 +540,7 @@ var Game = (function () {
     if(dragon.mana < 50) ctx.fillStyle = '#994488';
     else ctx.fillStyle = '#66ccff';
     
-    // Draw rectangle a proportional amount to dragon mana
+    // Draw rectangle a proportional amount to dragon's mana
     ctx.fillRect(300, 570, Math.round(dragon.mana*2), 25);
 
     // Draw text over mana bar displaying "currMana/MaxMana"
@@ -533,7 +579,7 @@ var Game = (function () {
 
   // Draw fancy text to canvas
   // Takes text to print and (x, y) coordinates
-  function drawFancyText(text, x, y) {
+  drawFancyText = function (text, x, y) {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 5;
     ctx.strokeText(text, x, y);
@@ -543,7 +589,7 @@ var Game = (function () {
 
   // Draw plain old lame static sprite
   // Takes an image to draw and an entity to base it on
-  var drawSprite = function (img, entity) {
+  drawSprite = function (img, entity) {
     ctx.drawImage(
       img, 
       entity.x-entity.width/2, 
@@ -554,7 +600,10 @@ var Game = (function () {
 
   // Draw a sprite from a sprite sheet
   // Takes a spritesheet to draw from and object to base it on
-  var drawSpriteSheet = function(img, obj) {
+  // Note: drawImage(image, sx, sy, sw, sh, x, y, w, h)
+  // The s variables stand for source, so where on sprite sheet
+  // other refer to canvas
+  drawSpriteSheet = function(img, obj) {
     ctx.drawImage(
       img, 
       obj.animator.animCurrFrame*obj.entity.width,
@@ -568,8 +617,9 @@ var Game = (function () {
   }
 
   // Since mouse events give (x, y) on the page
-  // We need to adjust it to (x, y) on the canvas
-  var getMousePos = function (x, y) {
+  // We need to adjust it to proper (x', y') on the canvas
+  // Also round cause some browsers have decimals... Sigh...
+  getMousePos = function (x, y) {
     var rect = canvas.getBoundingClientRect();
     return {
       x: Math.round(x - rect.left), 
@@ -577,15 +627,12 @@ var Game = (function () {
     };
   }
 
-  // Prototype of class
-  self.prototype = {
-    constructor: self,
-    start: function() { interval = setInterval(loop, 10) },
-  };
-
-  // return the game
-  return self;
-})();
+  // Start the game! Initialize and call game loop every 10 ms
+  this.start = function() { 
+    init();
+    interval = setInterval(loop, 10) 
+  }
+}
 
 // Initialize a new game and start her up!
 new Game("canvas").start();

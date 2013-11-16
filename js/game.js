@@ -352,7 +352,7 @@ var Game = function (id) {
       }
     }
 
-    // For every coin check collision
+    // For every coin check collision with dragon
     for(var i = 0; i < coins.length; i++) {
       // If coin colliding with dragon...
       if(coins[i].entity.collide(dragon.entity)) {
@@ -486,10 +486,8 @@ var Game = function (id) {
     updateAnimations(delta);
   }
 
-  // Draw to canvas!
-  draw = function () {
-    // Clear screen and draw background to canvas
-    ctx.clearRect(0, 0, 800, 600);
+  drawObjects = function () {
+    // Draw background to canvas
     ctx.drawImage(backgroundImg, 0, 0);
 
     // If the game is over, draw the deadDragon sprite
@@ -531,7 +529,9 @@ var Game = function (id) {
     for(var i = 0; i < fireballs.length; i++) {
       drawSpriteSheet(fireballSprite, fireballs[i]);
     }
+  }
 
+  drawUI = function () {
     // Black border around mana bar 
     ctx.fillStyle = 'black';
     ctx.fillRect(299, 569, 202, 27);
@@ -575,6 +575,18 @@ var Game = function (id) {
       drawFancyText("You have been slain.", 400, 260);
       drawFancyText("Press R to play again!", 400, 340);
     }
+  }
+
+  // Draw to canvas!
+  draw = function () {
+    // Clear screen
+    ctx.clearRect(0, 0, 800, 600);
+
+    // Draw objects (dragon, peasants, etc)
+    drawObjects();
+
+    // Draw UI (User Interface) (text, manabar)
+    drawUI();
   }
 
   // Draw fancy text to canvas

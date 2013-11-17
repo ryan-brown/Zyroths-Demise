@@ -17,12 +17,13 @@ var Game = function (id) {
       interval;
 
   // List of functions
-  var init, reset, loop, 
+  var init, reset, loop,
       update, updateObjects, handleCollisions, 
       updateGame, updateSpawnTimes, updateAnimations,
       draw, drawFancyText, drawSprite, drawSpriteSheet,
       getMousePos;
 
+  // Initialize variables, load images/sounds, and set event listeners
   init = function() {
     // Grab the canvas and context (canvas init stuff)
     canvas = document.getElementById(id);
@@ -642,7 +643,7 @@ var Game = function (id) {
   // Start the game! Initialize and call game loop every 10 ms
   this.start = function() { 
     init();
-    interval = setInterval(loop, 10) 
+    interval = setInterval(loop, 10);
   }
 }
 

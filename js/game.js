@@ -13,7 +13,7 @@ var Game = function (id) {
       fireballSound, magicSound, chingSound, chinkSound, newHighscoreSound,
       dragonDeathSound, peasantDeathSound, knightDeathSound, 
       muteMusic, musicSound, muteSound,
-      gameOver,
+      pressingPause, pressingPauseBefore, paused, gameOver,
       interval;
 
   // List of functions
@@ -35,6 +35,11 @@ var Game = function (id) {
 
     // The game is not over... yet.
     gameOver = false;
+
+    // The game is not paused
+    paused = false;
+    pressingPause = false;
+    pressingPauseBefore = false;
 
     // Don't assume they want my beautiful music muted
     muteSound = false;
@@ -90,6 +95,9 @@ var Game = function (id) {
         case 82: // r
           reset();
           break;
+        case 80: // p
+          pressingPause = true;
+          break;
         case 32: // space
           e.preventDefault();
           dragon.tryToMagicFire = true;
@@ -114,6 +122,9 @@ var Game = function (id) {
       switch(e.keyCode) {
         case 32: // space
           dragon.tryToMagicFire = false;
+          break;
+        case 80: // p
+          pressingPause = false;
           break;
         case 87: // w
           dragon.upPressed = false;
@@ -178,6 +189,10 @@ var Game = function (id) {
     knights = [];
     coins = [];
 
+    paused = false;
+    pressingPause = false;
+    pressingPauseBefore = false;
+
     peasantSpawnTime = 3;
     minPeasantSpawnTime = .7;
     currPeasantSpawnTime = peasantSpawnTime;
@@ -198,8 +213,20 @@ var Game = function (id) {
     var delta = newTime - lastTime;
     lastTime = newTime;
 
+    if(!gameOver) {
+      if(pressingPause && !pressingPauseBefore) {
+        paused = !paused;
+        pressingPauseBefore = true;
+      }
+      else if(!pressingPause) {
+        pressingPauseBefore = false;
+      }
+    }
+
     // if game running, update the game
-    if(!gameOver) { update(delta); }
+    if(!gameOver && !paused) { 
+      update(delta); 
+    }
     
     // Draw the game to canvas
     draw();  
@@ -566,6 +593,14 @@ var Game = function (id) {
     }
     else {
       drawFancyText("Highscore: "+Math.round(highscore), 400, 0);
+    }
+
+    // If the game is paused, display the pause message
+    if(paused) {
+      ctx.textAlign = "center"; 
+      ctx.textBaseline = "middle"; 
+      ctx.font = "48px 'Lucida Grande'";
+      drawFancyText("Paused", 400, 300);
     }
     
     // If the game is over, display the gameover message

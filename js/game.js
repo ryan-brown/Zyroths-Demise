@@ -8,6 +8,7 @@ var Game = function (id) {
       knightSpawnTime, currKnightSpawnTime, minKnightSpawnTime,
       lastTime,
       highscore, newHighscore,
+      peasantsSlain, knightsSlain,
       dragonSprite, fireballSprite, peasantSprite, coinSprite, 
       deadDragonImg, backgroundImg,
       fireballSound, magicSound, chingSound, chinkSound, newHighscoreSound,
@@ -162,16 +163,20 @@ var Game = function (id) {
       if(muteMusic) {
         musicSound.play();
         muteMusic = false;
+        document.getElementById("muteMusicButton").innerHTML = "Mute Music";
       }
       else {
         musicSound.pause();
         muteMusic = true;
+        document.getElementById("muteMusicButton").innerHTML = "Unmute Music";
       } 
     });
 
     // Mute Sound button
     document.getElementById("muteSoundButton").addEventListener('click', function() {
       muteSound = !muteSound;
+      if(muteSound) document.getElementById("muteSoundButton").innerHTML = "Unmute Sound";
+      else document.getElementById("muteSoundButton").innerHTML = "Mute Sound";
     });
 
     // Set the initial last time to now.
@@ -188,6 +193,9 @@ var Game = function (id) {
     peasants = [];
     knights = [];
     coins = [];
+
+    peasantsSlain = 0;
+    knightsSlain = 0;
 
     paused = false;
     pressingPause = false;
@@ -298,6 +306,8 @@ var Game = function (id) {
             dragon.mana += 1;
             if(dragon.mana > 100) dragon.mana = 100;
 
+            peasantsSlain += 1;
+
             // delete peasant
             peasants.splice(i, 1);
 
@@ -350,6 +360,8 @@ var Game = function (id) {
             dragon.score += 50;
             dragon.mana += 3;
             if(dragon.mana > 100) dragon.mana = 100;
+
+            knightsSlain += 1;
 
             // delete knight
             knights.splice(i, 1);
@@ -584,6 +596,12 @@ var Game = function (id) {
     ctx.textAlign = "left"; 
     ctx.textBaseline = "top"; 
     drawFancyText("Score: "+Math.round(dragon.score), 5, 0);
+
+    // Draw the dragons score at top left corner
+    ctx.textAlign = "right"; 
+    ctx.textBaseline = "top"; 
+    drawFancyText("Peasants Slain: "+peasantsSlain, 795, 0);
+    drawFancyText("Knights Slain: "+knightsSlain, 795, 25);
 
     // If there is a new highscore, draw that. Otherwise display
     // the current highscore

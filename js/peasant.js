@@ -7,19 +7,19 @@ var Peasant = function () {
   // Set speed randomly in [100, 125] (px/s)
   this.speed = Math.floor(Math.random()*26)+100;
 
+  // Create an animator object with 2 sprites every 300ms
+  this.animator = new Animator(2, 200);
+
   // Is the knight facing left? (Determines which spritesheet to use)
   this.facingLeft = false;
 
   // Health (fireball does 1 damage)
   this.hp = 1;
-  
-  // Create an animator object with 2 sprites every 300ms
-  this.animator = new Animator(2, 200);
 
   // Update method to calculate new (x, y) and change direction if necessary
   // Takes the given dragons entity and a 
   // delta(change in time(ms) since last tick)
-  this.update = function (dragonEntity, delta) {
+  this.update = function(dragonEntity, delta) {
     // calculate angle towards given dragon entity (simple trig)
     var angle = Math.atan2(
       this.entity.x-dragonEntity.x, 

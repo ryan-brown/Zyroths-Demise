@@ -1,6 +1,6 @@
 // Knight Class
 // Takes no arguments since it spawns randomly
-var Knight = function () {
+var Knight = function() {
   // Create an entity at random location
   this.entity = spawn();
 
@@ -19,7 +19,7 @@ var Knight = function () {
   // Update method to calculate new (x, y) and change direction if necessary
   // Takes the given dragons entity and a 
   // delta(change in time(ms) since last tick)
-  this.update = function (dragonEntity, delta) {
+  this.update = function(dragonEntity, delta) {
     // calculate angle towards given dragon entity (simple trig)
     var angle = Math.atan2(
       this.entity.x-dragonEntity.x, 

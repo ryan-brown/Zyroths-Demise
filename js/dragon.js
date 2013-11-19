@@ -47,7 +47,7 @@ var Dragon = function() {
   this.movingLeft = false;
 
   // Update method to calculate new (x, y) and change direction if necessary
-  this.update = function (delta) {
+  this.update = function(delta) {
     // velocity = speed*time(s)
     var v = this.speed*delta/1000;
 
@@ -104,12 +104,12 @@ var Dragon = function() {
   }
 
   // Updates mouse position with given mouse position
-  this.updateMouse = function (pos){
+  this.updateMouse = function(pos){
     this.mousePos = pos;
   }
 
   // Fire a fireball!
-  this.fire = function () {
+  this.fire = function() {
     // calculate angle towards mousePos (simple trig)
     var angle = Math.atan2(
       this.mousePos.x-this.entity.x, 
@@ -123,7 +123,7 @@ var Dragon = function() {
   // Fire a magic ability
   // This basically fires 72 fireballs in a concentric circle
   // radiating from the dragon
-  this.magic = function () {
+  this.magic = function() {
     // New array of fireballs to emit
     var magicFireballs = [];
 

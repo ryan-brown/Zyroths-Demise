@@ -1,11 +1,12 @@
 // Game Class
 // This is the heart and soul of Dragon Defender
-var Game = function (id) {
+var Game = function(id) {
   // The almighty list of variables. Oh boy.
   var canvas, ctx, 
       dragon, fireballs, peasants, knights, coins,
       peasantSpawnTime, currPeasantSpawnTime, minPeasantSpawnTime,
       knightSpawnTime, currKnightSpawnTime, minKnightSpawnTime,
+      floatingText,
       lastTime,
       highscore, newHighscore,
       peasantsSlain, knightsSlain,
@@ -15,6 +16,7 @@ var Game = function (id) {
       dragonDeathSound, peasantDeathSound, knightDeathSound, 
       muteMusic, musicSound, muteSound,
       pressingPause, pressingPauseBefore, paused, gameOver,
+      achievements,
       interval;
 
   // List of functions
@@ -33,6 +35,22 @@ var Game = function (id) {
     // Default hightscore = 1000 and newHighscore = false
     highscore = 1000;
     newHighscore = false;
+
+    // Achievements
+    achievements = [];
+    achievements['kill_25_peasants'] = false;
+    achievements['kill_100_peasants'] = false;
+    /*achievements['kill_5_knights'] = false;
+    achievements['kill_25_knights'] = false;
+    achievements['collect_3_coins'] = false;
+    achievements['collect_10_coins'] = false;
+    achievements['get_1000_points'] = false;
+    achievements['get_5000_points'] = false;
+    achievements['get_10000_points'] = false;
+    achievements['get_15000_points'] = false;
+    achievements['get_2500_points_no_special'] = false;
+    achievements['get_5000_points_no_special'] = false;
+    achievements['get_7500_points_no_special'] = false;*/
 
     // The game is not over... yet.
     gameOver = false;
@@ -193,6 +211,7 @@ var Game = function (id) {
     peasants = [];
     knights = [];
     coins = [];
+    floatingText = [];
 
     peasantsSlain = 0;
     knightsSlain = 0;
@@ -215,7 +234,7 @@ var Game = function (id) {
   }
 
   // game loop
-  loop = function () {
+  loop = function() {
     // Calculate time since last tick in ms
     var newTime = new Date().getTime();
     var delta = newTime - lastTime;
@@ -264,6 +283,12 @@ var Game = function (id) {
     for(var i = 0; i < knights.length; i++) {
       knights[i].update(dragon.entity, delta);
     }
+
+    // For every floatingText, update its time left
+    for(var i = 0; i < floatingText.length; i++) {
+      floatingText[i].update(delta);
+      if(floatingText[i].time <= 0) floatingText.splice(i, 1);
+    }
   }
 
   // Handle collisions
@@ -307,6 +332,9 @@ var Game = function (id) {
             if(dragon.mana > 100) dragon.mana = 100;
 
             peasantsSlain += 1;
+
+            // Create new floaingPoints with 10 Points
+            floatingText.push(new FloatingText(peasants[i].entity, "10"));
 
             // delete peasant
             peasants.splice(i, 1);
@@ -363,6 +391,9 @@ var Game = function (id) {
 
             knightsSlain += 1;
 
+            // Create new floaingText with 50 Points
+            floatingText.push(new FloatingText(knights[i].entity, "50"));
+
             // delete knight
             knights.splice(i, 1);
 
@@ -397,8 +428,12 @@ var Game = function (id) {
       // If coin colliding with dragon...
       if(coins[i].entity.collide(dragon.entity)) {
         // delete the coin and incease score
-        coins.splice(i, 1);
         dragon.score += 100;
+
+        // Create new floaingText with 100 Points
+        floatingText.push(new FloatingText(coins[i].entity, "100"));
+
+        coins.splice(i, 1);
 
         // make sure sound isn't muted
         if(!muteSound) {
@@ -484,6 +519,31 @@ var Game = function (id) {
     if(!dragon.tryToMagicFire) {
       dragon.magicFiring = false;
     }
+
+    for(var achiev in achievements) {
+      if(achievements[achiev]) {
+        continue;
+      }
+      else if(achiev == "kill_25_peasants") {
+        if(peasantsSlain >= 1) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(150, 585, 0, 0),
+            "New Achievement: Kill 25 Peasants"));
+        }
+        
+      }
+      else if(achiev == "kill_100_peasants") {
+        if(peasantsSlain >= 100) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Kill 100 Peasants"));
+        }
+      }
+    }
   }
 
   updateAnimations = function(delta) {
@@ -509,7 +569,7 @@ var Game = function (id) {
   }
 
   // Game update based on given delta (time since last tick in ms)
-  update = function (delta) {
+  update = function(delta) {
     // Update objects
     updateObjects(delta);
 
@@ -526,7 +586,7 @@ var Game = function (id) {
     updateAnimations(delta);
   }
 
-  drawObjects = function () {
+  drawObjects = function() {
     // Draw background to canvas
     ctx.drawImage(backgroundImg, 0, 0);
 
@@ -571,7 +631,7 @@ var Game = function (id) {
     }
   }
 
-  drawUI = function () {
+  drawUI = function() {
     // Black border around mana bar 
     ctx.fillStyle = 'black';
     ctx.fillRect(299, 569, 202, 27);
@@ -590,35 +650,48 @@ var Game = function (id) {
     drawFancyText(
       Math.floor(dragon.mana) + "/" + Math.round(dragon.maxMana), 
       400, 
-      583);
+      583,
+      '#DDFFEE');
 
     // Draw the dragons score at top left corner
     ctx.textAlign = "left"; 
     ctx.textBaseline = "top"; 
-    drawFancyText("Score: "+Math.round(dragon.score), 5, 0);
+    drawFancyText("Score: "+Math.round(dragon.score), 5, 0, '#DDFFEE');
 
     // Draw the dragons score at top left corner
     ctx.textAlign = "right"; 
     ctx.textBaseline = "top"; 
-    drawFancyText("Peasants Slain: "+peasantsSlain, 795, 0);
-    drawFancyText("Knights Slain: "+knightsSlain, 795, 25);
+    drawFancyText("Peasants Slain: "+peasantsSlain, 795, 0, '#DDFFEE');
+    drawFancyText("Knights Slain: "+knightsSlain, 795, 25, '#DDFFEE');
 
     // If there is a new highscore, draw that. Otherwise display
     // the current highscore
     ctx.textAlign = "center"; 
     if(newHighscore) {
-      drawFancyText("New Highscore!", 400, 0);
+      drawFancyText("New Highscore!", 400, 0, '#aaff88');
     }
     else {
-      drawFancyText("Highscore: "+Math.round(highscore), 400, 0);
+      drawFancyText("Highscore: "+Math.round(highscore), 400, 0, '#DDFFEE');
     }
+
+    ctx.font = "16px 'Lucida Grande'";
+    for(var i = 0; i < floatingText.length; i++) {
+      ctx.textAlign = "center"; 
+      ctx.textBaseline = "middle"; 
+      drawFancyText(
+        floatingText[i].text, 
+        floatingText[i].x, 
+        floatingText[i].y,
+        '#aaff88');
+    }
+    
 
     // If the game is paused, display the pause message
     if(paused) {
       ctx.textAlign = "center"; 
       ctx.textBaseline = "middle"; 
       ctx.font = "48px 'Lucida Grande'";
-      drawFancyText("Paused", 400, 300);
+      drawFancyText("Paused", 400, 300, '#DDFFEE');
     }
     
     // If the game is over, display the gameover message
@@ -626,13 +699,13 @@ var Game = function (id) {
       ctx.textAlign = "center"; 
       ctx.textBaseline = "middle"; 
       ctx.font = "48px 'Lucida Grande'";
-      drawFancyText("You have been slain.", 400, 260);
-      drawFancyText("Press R to play again!", 400, 340);
+      drawFancyText("You have been slain.", 400, 260, '#ff4444');
+      drawFancyText("Press R to play again!", 400, 340, '#ff4444');
     }
   }
 
   // Draw to canvas!
-  draw = function () {
+  draw = function() {
     // Clear screen
     ctx.clearRect(0, 0, 800, 600);
 
@@ -644,18 +717,19 @@ var Game = function (id) {
   }
 
   // Draw fancy text to canvas
-  // Takes text to print and (x, y) coordinates
-  drawFancyText = function (text, x, y) {
+  // Takes text to print and (x, y) coordinates with given color
+  // Has black border by default
+  drawFancyText = function(text, x, y, color) {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 5;
     ctx.strokeText(text, x, y);
-    ctx.fillStyle = '#DDFFEE';
+    ctx.fillStyle = color;
     ctx.fillText(text, x, y);
   }
 
   // Draw plain old lame static sprite
   // Takes an image to draw and an entity to base it on
-  drawSprite = function (img, entity) {
+  drawSprite = function(img, entity) {
     ctx.drawImage(
       img, 
       entity.x-entity.width/2, 
@@ -685,7 +759,7 @@ var Game = function (id) {
   // Since mouse events give (x, y) on the page
   // We need to adjust it to proper (x', y') on the canvas
   // Also round cause some browsers have decimals... Sigh...
-  getMousePos = function (x, y) {
+  getMousePos = function(x, y) {
     var rect = canvas.getBoundingClientRect();
     return {
       x: Math.round(x - rect.left), 

@@ -1,6 +1,6 @@
 // Fireball Class
 // Takes (x, y) coordinates and an angle to go in
-var Fireball = function (x, y, angle) {
+var Fireball = function(x, y, angle) {
   // Create an entity at given (x, y) with width:8 and height:8
   this.entity = new Entity(x, y, 8, 8);
   
@@ -16,7 +16,7 @@ var Fireball = function (x, y, angle) {
   this.animator = new Animator(4, 100);
 
   // Update method to calculate new (x, y) 
-  this.update= function (delta) {
+  this.update= function(delta) {
     // velocity = speed*time(s)
     var v = this.speed*delta/1000;
 

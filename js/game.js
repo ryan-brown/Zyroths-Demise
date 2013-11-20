@@ -9,7 +9,7 @@ var Game = function(id) {
       floatingText,
       lastTime,
       highscore, newHighscore,
-      peasantsSlain, knightsSlain,
+      peasantsSlain, knightsSlain, coinsCollected, noSpecial,
       dragonSprite, fireballSprite, peasantSprite, coinSprite, 
       deadDragonImg, backgroundImg,
       fireballSound, magicSound, chingSound, chinkSound, newHighscoreSound,
@@ -40,17 +40,17 @@ var Game = function(id) {
     achievements = [];
     achievements['kill_25_peasants'] = false;
     achievements['kill_100_peasants'] = false;
-    /*achievements['kill_5_knights'] = false;
+    achievements['kill_5_knights'] = false;
     achievements['kill_25_knights'] = false;
-    achievements['collect_3_coins'] = false;
     achievements['collect_10_coins'] = false;
+    achievements['collect_25_coins'] = false;
     achievements['get_1000_points'] = false;
     achievements['get_5000_points'] = false;
     achievements['get_10000_points'] = false;
     achievements['get_15000_points'] = false;
     achievements['get_2500_points_no_special'] = false;
     achievements['get_5000_points_no_special'] = false;
-    achievements['get_7500_points_no_special'] = false;*/
+    achievements['get_7500_points_no_special'] = false;
 
     // The game is not over... yet.
     gameOver = false;
@@ -215,6 +215,8 @@ var Game = function(id) {
 
     peasantsSlain = 0;
     knightsSlain = 0;
+    coinsCollected = 0;
+    noSpecial = true;
 
     paused = false;
     pressingPause = false;
@@ -239,6 +241,7 @@ var Game = function(id) {
     var newTime = new Date().getTime();
     var delta = newTime - lastTime;
     lastTime = newTime;
+    console.log(delta);
 
     if(!gameOver) {
       if(pressingPause && !pressingPauseBefore) {
@@ -430,6 +433,8 @@ var Game = function(id) {
         // delete the coin and incease score
         dragon.score += 100;
 
+        coinsCollected += 1;
+
         // Create new floaingText with 100 Points
         floatingText.push(new FloatingText(coins[i].entity, "100"));
 
@@ -508,6 +513,8 @@ var Game = function(id) {
       dragon.magicFiring = true;
       fireballs = fireballs.concat(dragon.magic());
 
+      noSpecial = false;
+
       // Make sure sound isn't muted
       if(!muteSound) {
         magicSound.currentTime=0;
@@ -519,13 +526,15 @@ var Game = function(id) {
     if(!dragon.tryToMagicFire) {
       dragon.magicFiring = false;
     }
+  }
 
+  updateAchievements = function() {
     for(var achiev in achievements) {
       if(achievements[achiev]) {
         continue;
       }
       else if(achiev == "kill_25_peasants") {
-        if(peasantsSlain >= 1) {
+        if(peasantsSlain >= 25) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
@@ -541,6 +550,96 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(100, 500, 0, 0),
             "New Achievement: Kill 100 Peasants"));
+        }
+      }
+      else if(achiev == "kill_5_knights") {
+        if(knightsSlain >= 5) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Kill 5 Knights"));
+        }
+      }
+      else if(achiev == "kill_25_knights") {
+        if(knightsSlain >= 25) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Kill 25 Knights"));
+        }
+      }
+      else if(achiev == "collect_10_coins") {
+        if(coinsCollected >= 10) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Collect 10 Coins"));
+        }
+      }
+      else if(achiev == "collect_25_coins") {
+        if(coinsCollected >= 25) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Collect 25 Coins"));
+        }
+      }
+      else if(achiev == "get_5000_points") {
+        if(dragon.score >= 5000) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Get 5000 Points"));
+        }
+      }
+      else if(achiev == "get_10000_points") {
+        if(dragon.score >= 10000) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Get 10000 Points"));
+        }
+      }
+      else if(achiev == "get_15000_points") {
+        if(dragon.score >= 15000) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Get 15000 Points"));
+        }
+      }
+      else if(achiev == "get_2500_points_no_special") {
+        if(dragon.score >= 2500 && noSpecial) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Get 2500 Points without Special"));
+        }
+      }
+      else if(achiev == "get_5000_points_no_special") {
+        if(dragon.score >= 5000 && noSpecial) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Get 5000 Points without Special"));
+        }
+      }
+      else if(achiev == "get_7500_points_no_special") {
+        if(dragon.score >= 7500 && noSpecial) {
+          achievements[achiev] = true;
+          document.getElementById(achiev).src = "img/"+achiev+"_won.png";
+          floatingText.push(new FloatingText(
+            new Entity(100, 500, 0, 0),
+            "New Achievement: Get 7500 Points"));
         }
       }
     }
@@ -581,6 +680,9 @@ var Game = function(id) {
 
     // Update spawn information for peasants/knigths
     updateSpawnTimes(delta);
+
+    // Update Achievements
+    updateAchievements();
 
     // Update animations of obejcts
     updateAnimations(delta);
@@ -663,6 +765,7 @@ var Game = function(id) {
     ctx.textBaseline = "top"; 
     drawFancyText("Peasants Slain: "+peasantsSlain, 795, 0, '#DDFFEE');
     drawFancyText("Knights Slain: "+knightsSlain, 795, 25, '#DDFFEE');
+    drawFancyText("Coins Collected: "+coinsCollected, 795, 50, '#DDFFEE');
 
     // If there is a new highscore, draw that. Otherwise display
     // the current highscore

@@ -548,7 +548,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Kill 100 Peasants"));
         }
       }
@@ -557,7 +557,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Kill 5 Knights"));
         }
       }
@@ -566,7 +566,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Kill 25 Knights"));
         }
       }
@@ -575,7 +575,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Collect 10 Coins"));
         }
       }
@@ -584,7 +584,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Collect 25 Coins"));
         }
       }
@@ -593,7 +593,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Get 5000 Points"));
         }
       }
@@ -602,7 +602,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Get 10000 Points"));
         }
       }
@@ -611,7 +611,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Get 15000 Points"));
         }
       }
@@ -620,7 +620,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Get 2500 Points without Special"));
         }
       }
@@ -629,7 +629,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Get 5000 Points without Special"));
         }
       }
@@ -638,7 +638,7 @@ var Game = function(id) {
           achievements[achiev] = true;
           document.getElementById(achiev).src = "img/"+achiev+"_won.png";
           floatingText.push(new FloatingText(
-            new Entity(100, 500, 0, 0),
+            new Entity(150, 585, 0, 0),
             "New Achievement: Get 7500 Points"));
         }
       }

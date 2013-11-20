@@ -13,7 +13,7 @@ var Game = function(id) {
       dragonSprite, fireballSprite, peasantSprite, coinSprite, 
       deadDragonImg, backgroundImg,
       fireballSound, magicSound, chingSound, chinkSound, newHighscoreSound,
-      dragonDeathSound, peasantDeathSound, knightDeathSound, 
+      dragonDeathSound, peasantDeathSound, knightDeathSound, achievementSound,
       muteMusic, musicSound, muteSound,
       pressingPause, pressingPauseBefore, paused, gameOver,
       achievements,
@@ -73,6 +73,7 @@ var Game = function(id) {
     peasantDeathSound = new Audio("audio/peasantDeath.wav");
     knightDeathSound = new Audio("audio/knightDeath.wav");
     newHighscoreSound = new Audio("audio/newHighscore.wav");
+    achievementSound = new Audio("audio/achievement.wav");
     musicSound = new Audio("audio/music2.wav");
     musicSound.loop = true;
     musicSound.play();
@@ -539,6 +540,11 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Kill 25 Peasants"));
+
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
         
       }
@@ -549,6 +555,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Kill 100 Peasants"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "kill_5_knights") {
@@ -558,6 +568,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Kill 5 Knights"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "kill_25_knights") {
@@ -567,6 +581,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Kill 25 Knights"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "collect_10_coins") {
@@ -576,6 +594,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Collect 10 Coins"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "collect_25_coins") {
@@ -585,6 +607,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Collect 25 Coins"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "get_5000_points") {
@@ -594,6 +620,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Get 5000 Points"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "get_10000_points") {
@@ -603,6 +633,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Get 10000 Points"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "get_15000_points") {
@@ -612,6 +646,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Get 15000 Points"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "get_2500_points_no_special") {
@@ -621,6 +659,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Get 2500 Points without Special"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "get_5000_points_no_special") {
@@ -630,6 +672,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Get 5000 Points without Special"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
       else if(achiev == "get_7500_points_no_special") {
@@ -639,6 +685,10 @@ var Game = function(id) {
           floatingText.push(new FloatingText(
             new Entity(150, 585, 0, 0),
             "New Achievement: Get 7500 Points"));
+          if(!muteSound) {
+            achievementSound.currentTime=0;
+            achievementSound.play();
+          }
         }
       }
     }

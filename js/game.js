@@ -241,7 +241,6 @@ var Game = function(id) {
     var newTime = new Date().getTime();
     var delta = newTime - lastTime;
     lastTime = newTime;
-    console.log(delta);
 
     if(!gameOver) {
       if(pressingPause && !pressingPauseBefore) {
@@ -785,7 +784,7 @@ var Game = function(id) {
         floatingText[i].text, 
         floatingText[i].x, 
         floatingText[i].y,
-        '#aaff88');
+        '#ffdd00');//'#aaff88');
     }
     
 
